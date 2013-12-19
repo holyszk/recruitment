@@ -6,12 +6,15 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import net.redexperts.recruitment.data.Place;
 import android.os.AsyncTask;
 
-public class JsonLoader extends AsyncTask<String, Void, Void> {
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class JsonLoader extends AsyncTask<String, Void, Place> {
 
 	@Override
-	protected Void doInBackground(String... urls) {
+	protected Place doInBackground(String... urls) {
 		
 		try {
 			return getJson(urls[0]);
@@ -22,9 +25,10 @@ public class JsonLoader extends AsyncTask<String, Void, Void> {
 		}
 	}
 	
-	private Void getJson(String jsonUrl) throws IOException {
+	private Place getJson(String jsonUrl) throws IOException {
 		InputStream is = null;
 		HttpsURLConnection connection = null;
+		Place place = null;
 		
 		try {
 			URL url = new URL(jsonUrl);
@@ -32,7 +36,8 @@ public class JsonLoader extends AsyncTask<String, Void, Void> {
 			connection.connect();
 			is = connection.getInputStream();
 			
-			//TODO: parse json
+			ObjectMapper mapper = new ObjectMapper();
+			place = mapper.readValue(is, Place.class);
 		} 
 		finally {
 			if(is != null)
@@ -41,6 +46,6 @@ public class JsonLoader extends AsyncTask<String, Void, Void> {
 				connection.disconnect();
 		}
 		
-		return null;
-	}	
+		return place;
+	}
 }
