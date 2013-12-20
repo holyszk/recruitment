@@ -4,10 +4,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.os.AsyncTask;
 
 public abstract class BasicLoader<DataType> extends AsyncTask<String, Void, DataType> {
+	
+	private List<Callbacks<DataType>> listeners;
+	
+	public interface Callbacks<T> {
+		public void onPostExecute(T data);
+	}
+	
+	public BasicLoader() {
+		listeners = new ArrayList<Callbacks<DataType>>();
+	}
+	
+	public void addListener(Callbacks<DataType> listener) {
+		listeners.add(listener);
+	}
+	
+	public void removeListener(Callbacks<DataType> listener) {
+		listeners.remove(listener);
+	}
 
 	@Override
 	protected DataType doInBackground(String... urls) {
@@ -41,6 +61,12 @@ public abstract class BasicLoader<DataType> extends AsyncTask<String, Void, Data
 		}
 		
 		return data;
+	}
+	
+	@Override
+	protected void onPostExecute(DataType result) {
+		for(Callbacks<DataType> listener : listeners) 
+			listener.onPostExecute(result);
 	}
 	
 	protected abstract DataType parseData(InputStream is);
