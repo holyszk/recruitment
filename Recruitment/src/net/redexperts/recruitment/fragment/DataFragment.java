@@ -50,6 +50,15 @@ public class DataFragment extends Fragment {
 	}
 	
 	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		
+		if(placeWithImage != null && placeWithImage.getImage() != null)
+			if(listener != null)
+				listener.onLoadFinished(placeWithImage);
+	}
+	
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	

@@ -9,7 +9,7 @@
 	    android:layout_height="100dp"
 	    android:scaleType="fitCenter"
 	    android:adjustViewBounds="true"
-	    android:layout_margin="2dp" />
+	    android:layout_marginRight="5dp" />
 	
 	<TextView android:id="@+id/title"
 	    android:layout_width="wrap_content"
