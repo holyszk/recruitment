@@ -7,7 +7,10 @@ import net.redexperts.recruitment.loader.BasicLoader.Callbacks;
 import net.redexperts.recruitment.loader.ImageLoader;
 import net.redexperts.recruitment.loader.JsonLoader;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
@@ -18,6 +21,9 @@ public class DataFragment extends Fragment {
 	private PlaceWithImage placeWithImage;
 	private OnLoadFinished listener;
 	
+	private boolean isLoadFinished = false;
+	private boolean isDataRequested = false;
+	
 	private Callbacks<Place> jsonCallbacks = new Callbacks<Place>() {
 
 		@Override
@@ -25,9 +31,15 @@ public class DataFragment extends Fragment {
 			if(data != null) {
 				placeWithImage = new PlaceWithImage();
 				placeWithImage.setPlace(data);
-				ImageLoader loader = new ImageLoader();
-				loader.addListener(imageCallbacks);
-				loader.execute(data.getImage());
+				if(!isOnline()) {
+					Toast.makeText(getActivity(), getString(R.string.no_connection), 
+							Toast.LENGTH_LONG).show();
+				}
+				else {
+					ImageLoader loader = new ImageLoader();
+					loader.addListener(imageCallbacks);
+					loader.execute(data.getImage());
+				}
 			}
 			else
 				Toast.makeText(getActivity(), getString(R.string.invalid_request), 
@@ -41,8 +53,12 @@ public class DataFragment extends Fragment {
 		public void onPostExecute(Bitmap data) {
 			if(data != null) {
 				placeWithImage.setImage(data);
-				if(listener != null)
+				isLoadFinished = true;
+				if(listener != null && isDataRequested) 
+				{
+					isDataRequested = false;
 					listener.onLoadFinished(placeWithImage);
+				}
 			}
 			else
 				Toast.makeText(getActivity(), getString(R.string.invalid_request), 
@@ -61,13 +77,14 @@ public class DataFragment extends Fragment {
 		listener = (OnLoadFinished) activity;
 	}
 	
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		
-		if(placeWithImage != null && placeWithImage.getImage() != null)
+	public void dataRequest() {
+		if(isLoadFinished)
+		{
 			if(listener != null)
 				listener.onLoadFinished(placeWithImage);
+		}
+		else 
+			isDataRequested = true;
 	}
 	
 	@Override
@@ -77,9 +94,15 @@ public class DataFragment extends Fragment {
 		//Prevents the start of another AsyncTask after configuration changes
 		setRetainInstance(true);
 		
-        JsonLoader jsonLoader = new JsonLoader();
-        jsonLoader.addListener(jsonCallbacks);
-        jsonLoader.execute("https://dl.dropboxusercontent.com/u/6556265/test.json");
+		if(!isOnline()) {
+			Toast.makeText(getActivity(), getString(R.string.no_connection), 
+					Toast.LENGTH_LONG).show();
+		}
+		else {
+			JsonLoader jsonLoader = new JsonLoader();
+			jsonLoader.addListener(jsonCallbacks);
+			jsonLoader.execute("https://dl.dropboxusercontent.com/u/6556265/test.json");
+		}
 	}
 	
 	@Override
@@ -87,5 +110,12 @@ public class DataFragment extends Fragment {
 		super.onDetach();
 		
 		listener = null;
+	}
+	
+	private boolean isOnline() {
+		ConnectivityManager manager = (ConnectivityManager) 
+				getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo info = manager.getActiveNetworkInfo();
+		return (info != null && info.isConnected());
 	}
 }

@@ -21,6 +21,7 @@ import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallback
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -105,8 +106,7 @@ public class MainActivity extends FragmentActivity implements OnLoadFinished,
 
 	@Override
 	public void onConnected(Bundle arg0) {
-		// TODO Auto-generated method stub
-		
+		dataFragment.dataRequest();
 	}
 
 	@Override
@@ -173,6 +173,8 @@ public class MainActivity extends FragmentActivity implements OnLoadFinished,
 		Map<Marker, PlaceWithImage> data = new HashMap<Marker, PlaceWithImage>();
 		data.put(marker, placeWithImage);
 		map.setInfoWindowAdapter(new InfoWindow(this, data));
+		
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
 	}
     
 }
