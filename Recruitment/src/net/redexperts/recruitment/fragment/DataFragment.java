@@ -1,5 +1,6 @@
 package net.redexperts.recruitment.fragment;
 
+import net.redexperts.recruitment.R;
 import net.redexperts.recruitment.data.Place;
 import net.redexperts.recruitment.data.PlaceWithImage;
 import net.redexperts.recruitment.loader.BasicLoader.Callbacks;
@@ -9,6 +10,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.widget.Toast;
 
 //Store data during configuration changes
 public class DataFragment extends Fragment {
@@ -20,11 +22,16 @@ public class DataFragment extends Fragment {
 
 		@Override
 		public void onPostExecute(Place data) {
-			placeWithImage = new PlaceWithImage();
-			placeWithImage.setPlace(data);
-			ImageLoader loader = new ImageLoader();
-			loader.addListener(imageCallbacks);
-			loader.execute(data.getImage());
+			if(data != null) {
+				placeWithImage = new PlaceWithImage();
+				placeWithImage.setPlace(data);
+				ImageLoader loader = new ImageLoader();
+				loader.addListener(imageCallbacks);
+				loader.execute(data.getImage());
+			}
+			else
+				Toast.makeText(getActivity(), getString(R.string.invalid_request), 
+						Toast.LENGTH_LONG).show();
 		}
 	};
 	
@@ -32,9 +39,14 @@ public class DataFragment extends Fragment {
 
 		@Override
 		public void onPostExecute(Bitmap data) {
-			placeWithImage.setImage(data);
-			if(listener != null)
-				listener.onLoadFinished(placeWithImage);
+			if(data != null) {
+				placeWithImage.setImage(data);
+				if(listener != null)
+					listener.onLoadFinished(placeWithImage);
+			}
+			else
+				Toast.makeText(getActivity(), getString(R.string.invalid_request), 
+						Toast.LENGTH_LONG).show();
 		}
 	};
 	

@@ -9,5 +9,7 @@
 	<string name="distance">Distance to marker: </string>
 	<string name="meter">meters</string>
 	<string name="no_location">No location available</string>
+	
+	<string name="invalid_request">Invalid request</string>
     
 </resources>
