@@ -2,5 +2,12 @@
 <resources>
 
     <string name="app_name">Recruitment</string>
-
+    
+    <string name="location">Location of the device</string>
+	<string name="latitude">Latitude: </string>
+	<string name="longitude">Longitude: </string>
+	<string name="distance">Distance to marker: </string>
+	<string name="meter">meters</string>
+	<string name="no_location">No location available</string>
+    
 </resources>
